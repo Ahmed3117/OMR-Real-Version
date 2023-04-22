@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+	<meta charset="utf-8">
+	<title>صفحة الموقع</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: right;
+			padding: 20px;
+		}
+		label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+		input[type="text"], input[type="number"] {
+			padding: 5px;
+			border: 1px solid #ccc;
+			border-radius: 3px;
+			margin-bottom: 10px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+		#dynamic-form input[type="checkbox"], #dynamic-form input[type="radio"] {
+			margin-right: 5px;
+		}
+		#dynamic-form label {
+			margin-right: 10px;
+		}
+		#dynamic-form .button-wrapper {
+			margin-top: 10px;
+		}
+		.button-wrapper button {
+			padding: 5px 10px;
+			background-color: #007bff;
+			color: #fff;
+			border: none;
+			border-radius: 3px;
+			cursor: pointer;
+		}
+		.button-wrapper button:hover {
+			background-color: #0056b3;
+		}
+	</style>
+</head>
+<body>
+	<h1>صفحة الموقع</h1>
+	<form>
+		<label for="title">عنوان الاختبار:</label>
+		<input type="text" id="title" name="title" required>
+
+		<label for="examiner1">اسم المدقق 1:</label>
+		<input type="text" id="examiner1" name="examiner1" required>
+
+		<label for="positive-int">الأعداد الصحيحة الإيجابية:</label>
+		<input type="number" id="positive-int" name="positive-int" required min="1">
+
+		<label for="examiner2">اسم المدقق 2:</label>
+		<input type="text" id="examiner2" name="examiner2" required>
+
+		<label for="questions-num">عدد الأسئلة:</label>
+		<input type="number" id="questions-num" name="questions-num" required min="1">
+
+		<label for="answers-num">عدد الإجابات لكل سؤال:</label>
+		<input type="number" id="answers-num" name="answers-num" required min="1">
+
+		<label for="question-score">عدد نقاط السؤال:</label>
+		<input type="number" id="question-score" name="question-score" required min="1">
+
+		<label for="folder-path">مسار المجلد:</label>
+		<input type="text" id="folder-path" name="folder-path" required>
+
+		<input type="submit" value="إرسال">
+	</form>
+
+	<h2>الإضافة المتكررة للإجابات</h2>
+	<div id="dynamic-form">
+		<label for="option1">الخيار 1:</label>
+		<input type="radio" id="option1" name="options" value="option1">
+        <label for="option2">الخيار 2:</label>
+        <input type="radio" id="option2" name="options" value="option2">
+        <label for="option3">الخيار 3:</label>
+        <input type="radio" id="option3" name="options" value="option3">
+        <label for="option4">الخيار 4:</label>
+        <input type="radio" id="option4" name="options" value="option4">
+        <label for="option5">الخيار 5:</label>
+        <input type="radio" id="option5" name="options" value="option5">
+        <div class="button-wrapper">
+        <button type="button" id="add-options">إضافة 5 خيارات جديدة</button>
+        </div>
+    </div>
+
+    <script>
+        // Add new options to the form when the button is clicked
+        document.getElementById("add-options").addEventListener("click", function() {
+            var optionsContainer = document.getElementById("dynamic-form");
+            var currentOptionCount = optionsContainer.querySelectorAll("input[type='checkbox']").length / 5;
+            for (var i = 1; i <= 5; i++) {
+                var newOption = document.createElement("input");
+                newOption.type = "checkbox";
+                newOption.id = "option" + (currentOptionCount * 5 + i);
+                newOption.name = "options";
+                var newLabel = document.createElement("label");
+                newLabel.setAttribute("for", newOption.id);
+                newLabel.textContent = "الخيار " + (currentOptionCount * 5 + i) + ":";
+                optionsContainer.insertBefore(newOption, optionsContainer.lastChild);
+                optionsContainer.insertBefore(newLabel, optionsContainer.lastChild);
+            }
+        });
+    </script>
+</body>
+</html>    
