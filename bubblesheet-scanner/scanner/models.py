@@ -3,13 +3,15 @@ from django.db import models
 
 import os
 
-from datetime import datetime
-
-
-class Files(models.Model):
-    dt=datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    file = models.FileField(upload_to= dt )
-
+def exam_file_path(instance, filename):
+    """
+    Returns the path where the file should be uploaded for the given Files instance.
+    The file will be uploaded to a directory named after the exam's ID or title.
+    """
+    exam = instance.exam
+    exam_id = str(exam.id)
+    exam_title = exam.title.replace(' ', '_')
+    return os.path.join('examfiles', exam_id + '_' + exam_title, filename)
 
 class Exam(models.Model):
     title = models.CharField(max_length=200, verbose_name='عنوان الامتحان') 
@@ -17,9 +19,7 @@ class Exam(models.Model):
     questions_number = models.PositiveIntegerField(verbose_name='عدد الاسئلة')
     answeres_number = models.PositiveSmallIntegerField(verbose_name='عدد الاجابات فى السؤال الواحد', default=5)
     question_score = models.PositiveSmallIntegerField(verbose_name='درجة السؤال')
-    folder_path = models.CharField(max_length=200, verbose_name='موقع مجلد الاجابات') 
     created_at = models.DateTimeField(auto_now=True, auto_now_add=False, verbose_name='تاريخ الانشاء')
-    files = models.ManyToManyField(Files, related_name='exams', verbose_name='اضف صور للتصحيح')
 
     def totalscore(self):
         total_score = self.questions_number * self.question_score
@@ -59,6 +59,10 @@ class Exam(models.Model):
     class Meta:
         verbose_name_plural = 'الامتحانات'
         ordering = ['created_at']
+
+class Files(models.Model):
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE,null=True)
+    file = models.FileField(upload_to=exam_file_path)
 
 class Students(models.Model):
     student_name = models.CharField(max_length=200,verbose_name='اسم الطالب') 
