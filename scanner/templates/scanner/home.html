@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+		
+	
+		::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */ 
+        color: #999; 
+        opacity: 1; /* Firefox */ 
+		}
+		:-ms-input-placeholder { /* Internet Explorer 10-11 */ 
+			color: #999; 
+		} 
+		::-ms-input-placeholder { /* Microsoft Edge */ 
+			color: #999; 
+		}
+		h1 {
+			margin: 0;
+			padding: 1rem;
+			text-align: center;
+		}
+
+		form {
+            background-color: #cdc1ad;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 50%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+		input[type="number"],
+		input[type="text"] {
+			border: none;
+			background-color: #ecf6f8;
+			border-radius: 5px;
+			font-size: 1rem;
+			padding: 0.4rem;
+			width: 100%;
+			margin-bottom: 5px;
+			outline: none;
+			
+		}
+        
+		select {
+			border: 1px solid #8fe2f5b0;
+			border-radius: 5px;
+			font-size: 1.2rem;
+			padding: 0.2rem;
+			width: 100%;
+			margin-bottom: 5px;
+			outline: none;
+		}
+		.box-container {
+			/* display: flex; */
+			/* flex-wrap: wrap; */
+			justify-content: center;
+			background-color: #e7b991;
+		}
+
+		.box {
+			align-items: center;
+			background-color: #e7b991;
+			
+			/* border: 1px solid #ccc; */
+			/* display: flex; */
+			flex-direction: row;
+			/* flex-wrap: wrap; */
+			justify-content: center;
+			/* margin: 0.2rem;
+			padding: .1rem; */
+			text-align: center;
+			/* width: 90%;
+			height: 50px; */
+		}
+
+		
+
+		button[type="submit"] {
+			background-color: #95826f;
+			border: none;
+			border-radius: 5px;
+			color: #ffffff;
+			cursor: pointer;
+			font-size: 1.2rem;
+			padding: 1rem;
+			margin-top: 1rem;
+			width: 100%;
+		}
+
+		button[type="submit"]:hover {
+			background-color:   #5d8381eb;
+		}
+		.box-container {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			grid-gap: 50px;
+		}
+
+		.box {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+		}
+
+		.box p {
+			margin-right: 5px;
+		}
+	</style>
+
+
+
+
+
+
+
+	<form class="mt-5" action="{% url 'scanner:printscore' %}" method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		
+			
+	
+		
+
+
+        <div dir="rtl" lang="ar" class="row m-2"></div>
+		<span style="color:#613014fb;font-size:30px">   تحديد نموذج امتحان جديد </span>
+	</div>
+	<div dir="rtl" lang="ar"  class="row mb-3 mt-3">
+		<div class="col-md-6">
+			<input type="text" id="examtitle" name="examtitle" placeholder="عنوان الامتحان" class="form-control" required>
+		</div>
+		<div class="col-md-6">
+			<input type="text" id="examiner" name="examiner" placeholder="جهة الامتحان" class="form-control">
+		</div>
+	</div>
+	<div dir="rtl" lang="ar" class="row mb-3">
+		<div class="col-md-3">
+			<input type="number" id="questionsnumber" name="questionsnumber" placeholder="عدد اسئلة اختيار من متعدد " min="1" value="" class="form-control" required>
+		</div>
+		<div class="col-md-3">
+			<input type="number" id="answeres_number" name="answeres_number" placeholder="عدد اجابات السؤال الواحد" min="1" value="" class="form-control" required>
+		</div>
+		<div class="col-md-3">
+			<input type="number" id="tfquestionsnumber" name="tfquestionsnumber" placeholder=" عدد اسئلة صح او خطأ  " min="0" value="0" class="form-control" >
+		</div>
+		<div class="col-md-3">
+			<input type="number" id="onequestionscore" name="onequestionscore" placeholder = "درجة السؤال الواحد" min="1" value="" class="form-control" required>
+		</div>
+	</div>
+
+	<div dir="rtl" lang="ar"  class="row mb-3 mt-3">
+		<div class="col-md-2" >
+			<input type="file" id="file" name="files" required multiple>
+		</div>
+	</div>
+	
+		
+	<div id="boxes" class="box-container"></div>
+	<button type="submit" id="submit" class="btn btn-primary">إرسال</button>
+	</form>
+
+	<script>
+			const questionsnumber = document.getElementById('questionsnumber');
+			const answeres_number = document.getElementById('answeres_number');
+			const tfquestionsnumber = document.getElementById('tfquestionsnumber');
+			const boxes = document.getElementById('boxes');
+		  
+			function createBoxes() {
+			  boxes.innerHTML = '';
+			  
+			  const total_questions_number = parseInt(questionsnumber.value) + parseInt(tfquestionsnumber.value)
+			  
+			  const columnCount = Math.ceil((total_questions_number) / 25); // 2
+			  console.log(columnCount)
+			  const boxesPerColumn = Math.ceil((total_questions_number) / columnCount); //25
+		  
+			  for (let i = 0; i < columnCount; i++) {
+				const column = document.createElement('div');
+				column.classList.add('box-column');
+		  
+				for (let j = i * boxesPerColumn; j < Math.min((i + 1) * boxesPerColumn, (total_questions_number )); j++) {
+				  const box = document.createElement('div');
+				  box.classList.add('box');
+				  box.id = `box-${j}`;
+				  box.innerHTML = `<p>${j + 1}</p>`;
+				  for (let k = 0; k < answeres_number.value; k++) {
+					  if (j >= (total_questions_number ) - tfquestionsnumber.value) {
+						if(k<=1){
+							const radio = document.createElement('input');
+							radio.type = 'radio';
+							radio.name = `box-${j}-radio`;
+							radio.value = k;
+							box.appendChild(radio);
+						}
+					  }
+					  else {
+						const radio = document.createElement('input');
+						radio.type = 'radio';
+						radio.name = `box-${j}-radio`;
+						radio.value = k;
+						box.appendChild(radio);
+					  }
+					  
+					
+				  }
+				  column.appendChild(box);
+				}
+		  
+				boxes.appendChild(column);
+			  }
+			}
+		  
+			questionsnumber.addEventListener('input', createBoxes);
+			answeres_number.addEventListener('input', createBoxes);
+			tfquestionsnumber.addEventListener('input', createBoxes);
+		  </script>
+		
+
+    
+    
+{% endblock content %}
+
+    
